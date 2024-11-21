@@ -1,11 +1,26 @@
 package main
 
-// #include <stdio.h>
-// void helloworld() {
-//   printf("hello, world from C\n");
-// }
-import "C"
+import (
+	"C"
 
-func main() {
-	C.helloworld()
+	"github.com/ebitengine/purego"
+)
+
+var libc uintptr
+var puts func(string)
+
+func init() {
+	libc, err := purego.Dlopen("libc.so.6", purego.RTLD_NOW|purego.RTLD_GLOBAL)
+	if err != nil {
+		panic(err)
+	}
+	purego.RegisterLibFunc(&puts, libc, "puts")
+	puts("Init success.")
+}
+
+func main() {}
+
+//export helloWorld
+func helloWorld() {
+	puts("Hello World!")
 }
